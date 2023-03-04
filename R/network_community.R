@@ -1,10 +1,32 @@
+#' Apply the Louvain Community Algorithm
+#'
+#' @param df_sim A dataframe or tibble containing similarity scores
+#' @returns An output list containing two components:
+#' \item{community}{igraph::communities object of the Louvain communities}
+#' \item{G}{igraph::graph object of the graph}
+#' @export
+#' @examples
+#' #calc_com_louv(df_similarities)
 calc_com_louv <- function(df_sim) {
-  df_sim <- dplyr::rename(df_sim, weight= 3 )
+  df_sim <- dplyr::rename(df_sim, weight = 3 )
   G <- igraph::graph_from_data_frame(df_sim, directed=FALSE)
   louv_com <- igraph::cluster_louvain(G)
   output <- list(community = louv_com, G = G)
 }
 
+
+
+#' Create a reduced bipartite network
+#'
+#' @param freq_df A dataframe or tibble containing edgeweights of base network
+#' @param comms_1 igraph::communities object of the first column's communities
+#' @param comms_2 igraph::communities object of the second column's communities
+#' @returns An output list containing two components:
+#' \item{df}{Tibble containing the edge weights of the reduced bipartite network}
+#' \item{G}{igraph::graph object of the reduced bipartite network}
+#' @export
+#' @examples
+#' #calc_com_louv(df_freq, litho_comms, source_comms)
 create_reduced_bipartite_network <- function(freq_df, comms_1, comms_2){
   '%>%' <- magrittr::'%>%'
   all_of <- tidyselect::all_of

@@ -1,3 +1,14 @@
+#' Creates a bipartite network from a single input file
+#'
+#' @param input_string A path to the input file (assumed to be a csv)
+#' @param col1 A string of the first column to create a network from
+#' @param col2 A string of the second column to create a network from
+#' @returns An output list containing two components:
+#' \item{df}{Tibble containing the edge weights of the bipartite network}
+#' \item{graph}{igraph::graph object, the bipartite network}
+#' @export
+#' @examples
+#' #create_graph_single_file("trial.csv","Source","POI")
 create_graph_single_file <- function(input_string, col1, col2) {
   '%>%' <- magrittr::'%>%'
   all_of <- tidyselect::all_of
@@ -12,6 +23,25 @@ create_graph_single_file <- function(input_string, col1, col2) {
   output <- list(df = df_graph, graph = G)
 }
 
+#' Creates two bipartite networks from two input files
+#'
+#' @param input_string1 A path to the first input file (assumed to be a csv)
+#' @param input_string2 A path to the second input file (assumed to be a csv)
+#' @param col1 First column of first network
+#' @param col2 Second column of first network
+#' @param col3 First column of second network
+#' @param col4 Second column of second network
+#' @param join_string Column to merge the two input csvs on
+#' @returns An output list containing five components:
+#' \item{df_12}{Tibble containing the edge weights of the first bipartite network}
+#' \item{graph_12}{igraph::graph object, the first bipartite network}
+#' \item{df_34}{Tibble containing the edge weights of the second bipartite network}
+#' \item{graph_34}{igraph::graph object, the second bipartite network}
+#' \item{df_full}{Raw, merged dataframe of the two input files}
+#' @export
+#' @examples
+#' #create_graphs_two_files("trial.csv", "trial2.csv", "Source",
+#' # "Litho", "Meta_Assemblage", "Meta_Litho", "Source")
 create_graphs_two_files <- function(input_string1, input_string2, col1, col2, col3, col4, join_string){
   '%>%' <- magrittr::'%>%'
   all_of <- tidyselect::all_of

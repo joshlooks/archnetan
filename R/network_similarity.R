@@ -1,3 +1,12 @@
+#' Calculates the cosine similarities of a bipartite network
+#'
+#' @param df_graph A dataframe of edge weights of a bipartite network
+#' @returns An output list containing two components:
+#' \item{col1_cossim}{Tibble containing the cosine similarities of first node type}
+#' \item{col2_cossim}{Tibble containing the cosine similarities of the second node type}
+#' @export
+#' @examples
+#' #calc_cos_sim(df_graph_main)
 calc_cos_sim <- function(df_graph) {
   '%>%' <- magrittr::'%>%'
   col1 <- colnames(df_graph)[1]
@@ -28,6 +37,18 @@ calc_cos_sim <- function(df_graph) {
   output <- list(col1_cossim = df_c1edg, col2_cossim = df_c2edg)
 }
 
+#' Calculates the cosine similarities of a bipartite network
+#'
+#' @param df_graph A dataframe of edge weights of a bipartite network
+#' @param type1 A string detailing the name of the first node type
+#' @param type2 A string detailing the name of the second node type
+#' @returns An output list containing three components:
+#' \item{col1_cossim}{Tibble containing the cosine similarities of first node type/columns}
+#' \item{col2_cossim}{Tibble containing the cosine similarities of the second node type/rows}
+#' \item{RCA_full}{Tibble containing the unnormalised RCA values of both types}
+#' @export
+#' @examples
+#' #calc_cos_sim(df_graph_main, "Source", "PoI")
 calc_rca_sim <- function(df_graph, type1="Source", type2="POI"){
   calc_rca <- function(m, cols, rows) {
     sum_cols <- colSums(m)
