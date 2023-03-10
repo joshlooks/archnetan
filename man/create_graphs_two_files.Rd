@@ -2,15 +2,15 @@
 % Please edit documentation in R/network_building.R
 \name{create_graphs_two_files}
 \alias{create_graphs_two_files}
-\title{Creates two bipartite networks from two input files}
+\title{Creates one or two bipartite networks from two input files}
 \usage{
 create_graphs_two_files(
   input_string1,
   input_string2,
   col1,
   col2,
-  col3,
-  col4,
+  col3 = NULL,
+  col4 = NULL,
   join_string
 )
 }
@@ -23,9 +23,9 @@ create_graphs_two_files(
 
 \item{col2}{Second column of first network}
 
-\item{col3}{First column of second network}
+\item{col3}{First column of second network (Optional)}
 
-\item{col4}{Second column of second network}
+\item{col4}{Second column of second network (Optional)}
 
 \item{join_string}{Column to merge the two input csvs on}
 }
@@ -33,12 +33,12 @@ create_graphs_two_files(
 An output list containing five components:
 \item{df_12}{Tibble containing the edge weights of the first bipartite network}
 \item{graph_12}{igraph::graph object, the first bipartite network}
-\item{df_34}{Tibble containing the edge weights of the second bipartite network}
-\item{graph_34}{igraph::graph object, the second bipartite network}
+\item{df_34}{Tibble containing the edge weights of the second bipartite network - requires col3,col4}
+\item{graph_34}{igraph::graph object, the second bipartite network - requires col3,col4}
 \item{df_full}{Raw, merged dataframe of the two input files}
 }
 \description{
-Creates two bipartite networks from two input files
+Creates one or two bipartite networks from two input files
 }
 \examples{
 #create_graphs_two_files("trial.csv", "trial2.csv", "Source",
