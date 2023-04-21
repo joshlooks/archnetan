@@ -2,7 +2,7 @@
 % Please edit documentation in R/network_similarity.R
 \name{calc_rca_sim}
 \alias{calc_rca_sim}
-\title{Calculates the cosine similarities of a bipartite network}
+\title{Calculates the cosine similarities of a bipartite network with using RCA normalisation}
 \usage{
 calc_rca_sim(df_graph, type1 = "Source", type2 = "POI")
 }
@@ -15,12 +15,12 @@ calc_rca_sim(df_graph, type1 = "Source", type2 = "POI")
 }
 \value{
 An output list containing three components:
-\item{col1_cossim}{Tibble containing the cosine similarities of first node type/columns}
-\item{col2_cossim}{Tibble containing the cosine similarities of the second node type/rows}
-\item{RCA_full}{Tibble containing the unnormalised RCA values of both types}
+\item{col1_cossim}{Tibble containing the cosine similarities of first node type/columns after RCA normalisation}
+\item{col2_cossim}{Tibble containing the cosine similarities of the second node type/rows after RCA normalisation}
+\item{RCA_full}{Tibble containing the RCA values of both columns/node types}
 }
 \description{
-Calculates the cosine similarities of a bipartite network
+Calculates the cosine similarities of a bipartite network with using RCA normalisation
 }
 \examples{
 #calc_cos_sim(df_graph_main, "Source", "PoI")
