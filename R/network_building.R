@@ -8,7 +8,7 @@
 #' \item{graph}{igraph::graph object, the bipartite network}
 #' @export
 #' @examples
-#' #create_graph_single_file("trial.csv","Source","POI")
+#' create_graph_single_file(archnetan_example("originalDataset.csv"),"Study Site","Source")
 create_graph_single_file <- function(input_string, col1, col2) {
   '%>%' <- magrittr::'%>%'
   all_of <- tidyselect::all_of
@@ -28,13 +28,14 @@ create_graph_single_file <- function(input_string, col1, col2) {
 #' @param input_string A path to the input file (assumed to be a csv)
 #' @param col1 A string of the first column to create a network from
 #' @param col2 A string of the second column to create a network from
-#' @param colwt A string of the column to weight the frequencies by
+#' @param colWt A string of the column to weight the frequencies by
 #' @returns An output list containing two components:
 #' \item{df}{Tibble containing the edge weights of the bipartite network}
 #' \item{graph}{igraph::graph object, the bipartite network}
 #' @export
 #' @examples
-#' #create_weighted_graph_single_file("trial.csv","Source","POI")
+#' create_weighted_graph_single_file(archnetan_example("originalDataset.csv"),
+#' "Study Site","Source","Weight (g)")
 create_weighted_graph_single_file <- function(input_string, col1, col2, colWt) {
   '%>%' <- magrittr::'%>%'
   df_full <- readr::read_csv(input_string)
@@ -67,8 +68,8 @@ create_weighted_graph_single_file <- function(input_string, col1, col2, colWt) {
 #' \item{df_full}{Raw, merged dataframe of the two input files}
 #' @export
 #' @examples
-#' #create_graphs_two_files("trial.csv", "trial2.csv", "Source",
-#' # "Litho", "Meta_Assemblage", "Meta_Litho", "Source")
+#' \dontrun{create_graphs_two_files("trial.csv", "trial2.csv", "Source",
+#' "Litho", "Meta_Assemblage", "Meta_Litho", "Source")}
 create_graphs_two_files <- function(input_string1, input_string2, col1, col2, col3=NULL, col4=NULL, join_string){
   '%>%' <- magrittr::'%>%'
   all_of <- tidyselect::all_of
@@ -112,7 +113,7 @@ create_graphs_two_files <- function(input_string1, input_string2, col1, col2, co
 #' \item{graph}{igraph::graph object, the bipartite network}
 #' @export
 #' @examples
-#' #create_graphs_df(base_df, "Source", "Combined")
+#' #create_graph_df(df_full, "Source", "Combined")
 create_graph_df <- function(df, col1, col2) {
   '%>%' <- magrittr::'%>%'
   all_of <- tidyselect::all_of
@@ -131,13 +132,13 @@ create_graph_df <- function(df, col1, col2) {
 #' @param df A dataframe to create the network from (assumed to be a tibble)
 #' @param col1 First column of network
 #' @param col2 Second column network
-#' @param colwt Column of weights in df
+#' @param colWt Column of weights in df
 #' @returns An output list containing two components:
 #' \item{df}{Tibble containing the edge weights of the bipartite network}
 #' \item{graph}{igraph::graph object, the bipartite network}
 #' @export
 #' @examples
-#' #create_graphs_df(base_df, "Source", "Combined", "Weight (g)")
+#' #create_weighted_graph_df(df_full, "Source", "Combined", "Weight (g)")
 create_weighted_graph_df <- function(df, col1, col2, colWt) {
   '%>%' <- magrittr::'%>%'
   df_temp <- dplyr::rename(df, wt = {{colWt}})
