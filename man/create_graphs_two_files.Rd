@@ -41,6 +41,6 @@ An output list containing five components:
 Creates one or two bipartite networks from two input files
 }
 \examples{
-#create_graphs_two_files("trial.csv", "trial2.csv", "Source",
-# "Litho", "Meta_Assemblage", "Meta_Litho", "Source")
+\dontrun{create_graphs_two_files("trial.csv", "trial2.csv", "Source",
+"Litho", "Meta_Assemblage", "Meta_Litho", "Source")}
 }
