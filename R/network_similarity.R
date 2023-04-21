@@ -37,15 +37,15 @@ calc_cos_sim <- function(df_graph) {
   output <- list(col1_cossim = df_c1edg, col2_cossim = df_c2edg)
 }
 
-#' Calculates the cosine similarities of a bipartite network
+#' Calculates the cosine similarities of a bipartite network with using RCA normalisation
 #'
 #' @param df_graph A dataframe of edge weights of a bipartite network
 #' @param type1 A string detailing the name of the first node type
 #' @param type2 A string detailing the name of the second node type
 #' @returns An output list containing three components:
-#' \item{col1_cossim}{Tibble containing the cosine similarities of first node type/columns}
-#' \item{col2_cossim}{Tibble containing the cosine similarities of the second node type/rows}
-#' \item{RCA_full}{Tibble containing the unnormalised RCA values of both types}
+#' \item{col1_cossim}{Tibble containing the cosine similarities of first node type/columns after RCA normalisation}
+#' \item{col2_cossim}{Tibble containing the cosine similarities of the second node type/rows after RCA normalisation}
+#' \item{RCA_full}{Tibble containing the RCA values of both columns/node types}
 #' @export
 #' @examples
 #' #calc_cos_sim(df_graph_main, "Source", "PoI")
@@ -107,3 +107,54 @@ calc_rca_sim <- function(df_graph, type1="Source", type2="POI"){
   df_rca <- df_rca[,c(colnames(df_rca)[cols],colnames(df_rca)[1:(cols-1)])]
   output <- list(RCA_df_row = df_phi_place, RCA_df_col = df_phi_source, RCA_full = df_rca)
 }
+
+calc_br_sim <- function(df_graph){
+  brainerd_robinson <- function(df) {
+    ncols <- dim(df)[1]
+    br_coeffs <- matrix(0,ncols,ncols)
+    for (i in 1:ncols) {
+      for (j in 1:ncols) {
+        temp1 <- df[i,]
+        temp2 <- df[j,]
+        br_coeffs[i,j] <- 1 - (sum(abs(temp1 - temp2)))/2}}
+    return(br_coeffs)
+  }
+
+  create_br_df <- function(br_mat, c1, cnames) {
+    '%>%' <- magrittr::'%>%'
+    ncols <- ncol(br_mat)
+    df_temp <- matrix(, nrow=ncols, ncol=(ncols+1))
+    colnames(df_temp) <- c(c1,cnames)
+    df_final <- tibble::as_tibble(df_temp)
+    df_final[,2:(ncols+1)] <- br_mat
+    df_final[,1] <- cnames
+    df_final
+  }
+
+  '%>%' <- magrittr::'%>%'
+  as_tibble <- tibble::as_tibble
+  col1 <- colnames(df_graph)[1]
+  col2 <- colnames(df_graph)[2]
+  df_wide <- df_graph %>% tidyr::spread(key = {{col1}}, value = weight, fill = 0)
+  df_wide_2 <- df_graph %>% tidyr::spread(key = {{col2}}, value = weight, fill = 0)
+  rows <- nrow(df_wide)
+  cols <- ncol(df_wide)
+  df_mat <- prop.table(as.matrix(df_wide[,2:cols]),1)
+  df_mat_2 <- prop.table(as.matrix(df_wide_2[,2:rows]),1)
+  vals <- brainerd_robinson(df_mat)
+  vals2 <- brainerd_robinson(df_mat_2)
+  df_br_col1 <- create_br_df(vals, col1, colnames(df_wide_2)[2:(rows+1)])
+  df_br_col2 <- create_br_df(vals2, col2, colnames(df_wide)[2:(cols)])
+  BR_df_col1 <- tidyr::pivot_longer(df_br_col1,-1,names_to="Secondary",values_to="BR")
+  BR_df_col1 <- BR_df_col1 %>% dplyr::rowwise() %>%
+    dplyr::mutate(temp = paste(sort(c(get(col1),Secondary)),collapse = " "))
+  BR_df_col1 <- BR_df_col1[!duplicated(BR_df_col1$temp),1:3]
+  BR_df_col1 <- BR_df_col1[BR_df_col1[,1] != BR_df_col1[,2],]
+  BR_df_col2 <- tidyr::pivot_longer(df_br_col2,-1,names_to="Secondary",values_to="BR")
+  BR_df_col2 <- BR_df_col2 %>% dplyr::rowwise() %>%
+    dplyr::mutate(temp = paste(sort(c(get(col2),Secondary)),collapse = " "))
+  BR_df_col2 <- BR_df_col2[!duplicated(BR_df_col2$temp),1:3]
+  BR_df_col2 <- BR_df_col2[BR_df_col2[,1] != BR_df_col2[,2],]
+  output <- list(BR_df_col1 = BR_df_col2, BR_df_col2 = BR_df_col1, BR_mat_col1 = df_br_col2, BR_mat_col2 = df_br_col1)
+}
+
