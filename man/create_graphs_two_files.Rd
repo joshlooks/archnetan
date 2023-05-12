@@ -41,6 +41,8 @@ An output list containing five components:
 Creates one or two bipartite networks from two input files
 }
 \examples{
-\dontrun{create_graphs_two_files("trial.csv", "trial2.csv", "Source",
-"Litho", "Meta_Assemblage", "Meta_Litho", "Source")}
+create_graphs_two_files(archnetan_example("setOne.csv"), archnetan_example("setTwo.csv"),
+"Source", "Lithographic Class", "Study Site", "Lithographic Class", "ID")
+create_graphs_two_files(archnetan_example("setOne.csv"), archnetan_example("setTwo.csv"),
+"Study Site", "Lithographic Class", join_string = "ID")
 }

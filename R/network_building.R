@@ -12,7 +12,7 @@
 create_graph_single_file <- function(input_string, col1, col2) {
   '%>%' <- magrittr::'%>%'
   all_of <- tidyselect::all_of
-  df_graph <- readr::read_csv(input_string)
+  df_graph <- readr::read_csv(input_string, show_col_types = FALSE)
   df_graph <- df_graph %>%
     tidyr::unite("Tup", c(all_of(col1),all_of(col2))) %>%
     dplyr::count(Tup) %>%
@@ -38,7 +38,7 @@ create_graph_single_file <- function(input_string, col1, col2) {
 #' "Study Site","Source","Weight (g)")
 create_weighted_graph_single_file <- function(input_string, col1, col2, colWt) {
   '%>%' <- magrittr::'%>%'
-  df_full <- readr::read_csv(input_string)
+  df_full <- readr::read_csv(input_string, show_col_types = FALSE)
   df_temp <- dplyr::rename(df_full, wt = {{colWt}})
   df_graph <- df_temp %>%
     tidyr::unite("Tup", c(all_of(col1),all_of(col2))) %>%
@@ -68,14 +68,16 @@ create_weighted_graph_single_file <- function(input_string, col1, col2, colWt) {
 #' \item{df_full}{Raw, merged dataframe of the two input files}
 #' @export
 #' @examples
-#' \dontrun{create_graphs_two_files("trial.csv", "trial2.csv", "Source",
-#' "Litho", "Meta_Assemblage", "Meta_Litho", "Source")}
+#' create_graphs_two_files(archnetan_example("setOne.csv"), archnetan_example("setTwo.csv"),
+#' "Source", "Lithographic Class", "Study Site", "Lithographic Class", "ID")
+#' create_graphs_two_files(archnetan_example("setOne.csv"), archnetan_example("setTwo.csv"),
+#' "Study Site", "Lithographic Class", join_string = "ID")
 create_graphs_two_files <- function(input_string1, input_string2, col1, col2, col3=NULL, col4=NULL, join_string){
   '%>%' <- magrittr::'%>%'
   all_of <- tidyselect::all_of
   as_tibble <- tibble::as_tibble
-  df_f <- readr::read_csv(input_string1)
-  df_f2 <- readr::read_csv(input_string2)
+  df_f <- readr::read_csv(input_string1, show_col_types = FALSE)
+  df_f2 <- readr::read_csv(input_string2, show_col_types = FALSE)
   df_full <- merge(df_f, df_f2, by=join_string, all=TRUE)
 
   df_graph_12 <- df_full %>% dplyr::select(c(all_of(col1), all_of(col2))) %>%
@@ -113,7 +115,7 @@ create_graphs_two_files <- function(input_string1, input_string2, col1, col2, co
 #' \item{graph}{igraph::graph object, the bipartite network}
 #' @export
 #' @examples
-#' #create_graph_df(df_full, "Source", "Combined")
+#' create_graph_df(archnetan::obsidian_full_df, "Study Site", "Source")
 create_graph_df <- function(df, col1, col2) {
   '%>%' <- magrittr::'%>%'
   all_of <- tidyselect::all_of
@@ -138,7 +140,7 @@ create_graph_df <- function(df, col1, col2) {
 #' \item{graph}{igraph::graph object, the bipartite network}
 #' @export
 #' @examples
-#' #create_weighted_graph_df(df_full, "Source", "Combined", "Weight (g)")
+#' create_weighted_graph_df(archnetan::obsidian_full_df, "Study Site", "Source", "Weight (g)")
 create_weighted_graph_df <- function(df, col1, col2, colWt) {
   '%>%' <- magrittr::'%>%'
   all_of <- tidyselect::all_of
@@ -151,5 +153,5 @@ create_weighted_graph_df <- function(df, col1, col2, colWt) {
     dplyr::filter(weight > 0)
   G <- igraph::graph_from_data_frame(df_graph, directed=FALSE)
   igraph::V(G)$type <- igraph::bipartite_mapping(G)$type
-  output <- list(df = df_graph, graph = G, df_full = df_full)
+  output <- list(df = df_graph, graph = G, df_full = df)
 }
