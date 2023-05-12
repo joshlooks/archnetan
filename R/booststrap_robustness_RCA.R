@@ -135,7 +135,7 @@ create_bootstrap_RCA_communities <- function(df, df_full, col1, col2, nBoot=100,
   output <- list(comm1 = bootRepComm1, comm2 = bootRepComm2,
                  hamming1 = col1Diff, hamming2 = col2Diff,
                  col1Changes = col1Change, col2Changes = col2Change,
-                 col1Stats = list(Mean=mean(col1Diff), STD=sd(col1Diff)),
-                 col2Stats = list(Mean=mean(col2Diff), STD=sd(col2Diff)),
+                 col1Stats = list(Mean=mean(col1Diff), STD=stats::sd(col1Diff)),
+                 col2Stats = list(Mean=mean(col2Diff), STD=stats::sd(col2Diff)),
                  df = bootRepdf)
 }

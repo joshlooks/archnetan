@@ -24,6 +24,7 @@
 RCA_communities_single <- function(df, col1, col2, proportion=0.10, numReps=100){
   as_tibble <- tibble::as_tibble
   tibble <- tibble::tibble
+  '%>%' <- magrittr::'%>%'
   # Bootstrap variables
   df <- as_tibble(df)
   nRows <- dim(df)[1]
@@ -125,6 +126,7 @@ RCA_communities_single <- function(df, col1, col2, proportion=0.10, numReps=100)
 RCA_communities_multi <- function(df, col1, col2, proportion=0.10, numReps=100){
   as_tibble <- tibble::as_tibble
   tibble <- tibble::tibble
+  '%>%' <- magrittr::'%>%'
   df <- as_tibble(df)
   nRows <- dim(df)[1]
   numNoise <- ceiling(nRows*proportion)
@@ -267,9 +269,9 @@ create_added_noise_RCA_communities <- function(df, col1, col2, proportion=0.10, 
         outSave <- outProp
       }
       col1Stats[l,2] <- mean(outProp$hamming1)
-      col1Stats[l,3] <- sd(outProp$hamming1)
+      col1Stats[l,3] <- stats::sd(outProp$hamming1)
       col2Stats[l,2] <- mean(outProp$hamming2)
-      col2Stats[l,3] <- sd(outProp$hamming2)
+      col2Stats[l,3] <- stats::sd(outProp$hamming2)
     }
     output <- list(col1Stats = col1Stats, col2Stats = col2Stats, propSave <- outSave)
   }

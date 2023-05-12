@@ -11,7 +11,8 @@ Imports:
     igraph,
     magrittr,
     readr,
-    rlang,
+    rlang (>= 0.4.11),
+    stats,
     tibble,
     tidyr,
     tidyselect
@@ -24,3 +25,5 @@ BugReports: https://github.com/nesaking100/archnetan/issues
 Depends: 
     R (>= 2.10)
 LazyData: true
+Suggests: 
+    roxygen2
