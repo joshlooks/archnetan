@@ -22,6 +22,7 @@
 cos_communities_single <- function(df, col1, col2, proportion=0.10, numReps=100){
   as_tibble <- tibble::as_tibble
   tibble <- tibble::tibble
+  membership <- igraph::membership
   # Bootstrap variables
   df <- as_tibble(df)
   nRows <- dim(df)[1]
@@ -124,6 +125,7 @@ cos_communities_multi <- function(df, col1, col2, proportion=0.10, numReps=100){
   as_tibble <- tibble::as_tibble
   tibble <- tibble::tibble
   '%>%' <- magrittr::'%>%'
+  membership <- igraph::membership
   df <- as_tibble(df)
   nRows <- dim(df)[1]
   numNoise <- ceiling(nRows*proportion)

@@ -24,6 +24,7 @@
 #' create_bootstrap_RCA_communities(df_graph, df_full, "Source", "Site", nboot=200, method="multi")
 #' }
 create_bootstrap_RCA_communities <- function(df, df_full, col1, col2, nBoot=100, method='single'){
+  membership <- igraph::membership
   # Function to deal with missing nodes during resampling
   copy_and_add_list <- function(original, replication){
     copy <- original
