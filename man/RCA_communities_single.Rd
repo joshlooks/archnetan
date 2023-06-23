@@ -19,7 +19,6 @@ RCA_communities_single(df, col1, col2, proportion = 0.1, numReps = 100)
 }
 \value{
 An output list containing nine components:
-\itemize{
 \item{comm1}{Tibble containing the assigned communities of column 1 in each run}
 \item{comm2}{Tibble containing the assigned communities of column 2 in each run}
 \item{hamming1}{Vector containing the Hamming distance to the original column 1 communities in each run}
@@ -27,7 +26,6 @@ An output list containing nine components:
 \item{col1Changes}{Tibble of binary values for whether a column 1 node changes communities in each run}
 \item{col2Changes}{Tibble of binary values for whether a column 1 node changes communities in each run}
 \item{df}{List of lists corresponding to the df_graph like tibbles produced in each bootstrap}
-}
 }
 \description{
 Adds noise (in the form of full data points), applies RCA and then create cosine-similarity communities from an inputted dataset

@@ -218,11 +218,8 @@ cos_communities_multi <- function(df, col1, col2, proportion=0.10, numReps=100){
 #' @param col2 A string of the second column used to make graphs
 #' @param proportion A double corresponding to the proportion of the original dataset's size to add as noise
 #' @param numReps Number of runs noise addition runs to complete
-#' @param method A string determining the method of drawing added noise data points:
-#' \itemize{
-#' \item{single (default)}{Draws a full artifact from the df dataframe}
-#' \item{multi}{Draws each characteristic from the df dataframe}
-#' }
+#' @param method A string determining the method of drawing added noise data points: single for full artifact,
+#' multi for drawing each artifact variably separately
 #' @param propSave Proportion of noise added for which to save the cos_communities_single/multi output for
 #'
 #' @returns An output list containing three components:

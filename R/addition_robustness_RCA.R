@@ -6,7 +6,6 @@
 #' @param proportion A double corresponding to the proportion of the original dataset's size to add as noise
 #' @param numReps Number of runs noise addition runs to complete
 #' @returns An output list containing nine components:
-#' \itemize{
 #' \item{comm1}{Tibble containing the assigned communities of column 1 in each run}
 #' \item{comm2}{Tibble containing the assigned communities of column 2 in each run}
 #' \item{hamming1}{Vector containing the Hamming distance to the original column 1 communities in each run}
@@ -14,7 +13,6 @@
 #' \item{col1Changes}{Tibble of binary values for whether a column 1 node changes communities in each run}
 #' \item{col2Changes}{Tibble of binary values for whether a column 1 node changes communities in each run}
 #' \item{df}{List of lists corresponding to the df_graph like tibbles produced in each bootstrap}
-#' }
 #' @export
 #'
 #' @examples
@@ -32,9 +30,9 @@ RCA_communities_single <- function(df, col1, col2, proportion=0.10, numReps=100)
   left_join <- dplyr::left_join
   noiseRepdf <- list()
   # Hamming and output variables
-  origRCA <- calc_rca_sim(df, col1, col2)
-  origMem1 <- membership(calc_com_louv(origRCA$RCA_df_col)$community)
-  origMem2 <- membership(calc_com_louv(origRCA$RCA_df_row)$community)
+  origRCA <- calc_rca_sim(df)
+  origMem1 <- membership(calc_com_louv(origRCA$col1_cossim)$community)
+  origMem2 <- membership(calc_com_louv(origRCA$col2_cossim)$community)
   col1Diff <- rep(0,numReps)
   col2Diff <- rep(0,numReps)
   col1Change <- matrix(0, length(origMem1), (numReps+1))
@@ -56,9 +54,9 @@ RCA_communities_single <- function(df, col1, col2, proportion=0.10, numReps=100)
     }
     # create the graph and communities
     noiseRepdf <- append(noiseRepdf, dfRep)
-    noiseRCA <- calc_rca_sim(dfRep, col1, col2)
-    col1_rca_noise = calc_com_louv(noiseRCA$RCA_df_col)
-    col2_rca_noise = calc_com_louv(noiseRCA$RCA_df_row)
+    noiseRCA <- calc_rca_sim(dfRep)
+    col1_rca_noise = calc_com_louv(noiseRCA$col1_cossim)
+    col2_rca_noise = calc_com_louv(noiseRCA$col2_cossim)
     col1mem <- membership(col1_rca_noise$community)
     col2mem <- membership(col2_rca_noise$community)
     repTemp1 <- tibble(node_id = names(col1mem), community=col1mem)
@@ -133,9 +131,9 @@ RCA_communities_multi <- function(df, col1, col2, proportion=0.10, numReps=100){
   left_join <- dplyr::left_join
   noiseRepdf <- list()
   # Hamming and output variables
-  origRCA <- calc_rca_sim(df, col1, col2)
-  origMem1 <- membership(calc_com_louv(origRCA$RCA_df_col)$community)
-  origMem2 <- membership(calc_com_louv(origRCA$RCA_df_row)$community)
+  origRCA <- calc_rca_sim(df)
+  origMem1 <- membership(calc_com_louv(origRCA$col1_cossim)$community)
+  origMem2 <- membership(calc_com_louv(origRCA$col2_cossim)$community)
   col1Diff <- rep(0,numReps)
   col2Diff <- rep(0,numReps)
   col1Change <- matrix(0, length(origMem1), (numReps+1))
@@ -169,9 +167,9 @@ RCA_communities_multi <- function(df, col1, col2, proportion=0.10, numReps=100){
     }
     # create the graph and communities
     noiseRepdf <- append(noiseRepdf, dfRep)
-    noiseRCA <- calc_rca_sim(dfRep, col1, col2)
-    col1_rca_noise = calc_com_louv(noiseRCA$RCA_df_col)
-    col2_rca_noise = calc_com_louv(noiseRCA$RCA_df_row)
+    noiseRCA <- calc_rca_sim(dfRep)
+    col1_rca_noise = calc_com_louv(noiseRCA$col1_cossim)
+    col2_rca_noise = calc_com_louv(noiseRCA$col2_cossim)
     col1mem <- membership(col1_rca_noise$community)
     col2mem <- membership(col2_rca_noise$community)
     repTemp1 <- tibble(node_id = names(col1mem), community=col1mem)
@@ -221,11 +219,8 @@ RCA_communities_multi <- function(df, col1, col2, proportion=0.10, numReps=100){
 #' @param col2 A string of the second column used to make graphs
 #' @param proportion A double corresponding to the proportion of the original dataset's size to add as noise
 #' @param numReps Number of runs noise addition runs to complete
-#' @param method A string determining the method of drawing added noise data points:
-#' \itemize{
-#' \item{single (default)}{Draws a full artifact from the df dataframe}
-#' \item{multi}{Draws each characteristic from the df dataframe}
-#' }
+#' @param method A string determining the method of drawing added noise data points: single for full artifact,
+#' multi for drawing each artifact variably separately
 #' @param propSave Proportion of noise added for which to save the cos_communities_single/multi output for
 #'
 #' @returns An output list containing three components:

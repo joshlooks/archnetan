@@ -25,11 +25,8 @@ create_added_noise_RCA_communities(
 
 \item{numReps}{Number of runs noise addition runs to complete}
 
-\item{method}{A string determining the method of drawing added noise data points:
-\itemize{
-\item{single (default)}{Draws a full artifact from the df dataframe}
-\item{multi}{Draws each characteristic from the df dataframe}
-}}
+\item{method}{A string determining the method of drawing added noise data points: single for full artifact,
+multi for drawing each artifact variably separately}
 
 \item{propSave}{Proportion of noise added for which to save the cos_communities_single/multi output for}
 }
