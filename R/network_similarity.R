@@ -37,19 +37,17 @@ calc_cos_sim <- function(df_graph) {
   output <- list(col1_cossim = df_c1edg, col2_cossim = df_c2edg)
 }
 
-#' Calculates the cosine similarities of a bipartite network with using RCA normalisation
+#' Calculates the cosine similarities of a bipartite network using RCA normalisation
 #'
 #' @param df_graph A dataframe of edge weights of a bipartite network
-#' @param type1 A string detailing the name of the first node type
-#' @param type2 A string detailing the name of the second node type
 #' @returns An output list containing three components:
-#' \item{col1_cossim}{Tibble containing the cosine similarities of first node type/columns after RCA normalisation}
-#' \item{col2_cossim}{Tibble containing the cosine similarities of the second node type/rows after RCA normalisation}
+#' \item{col1_cossim}{Tibble containing the cosine similarities of first node type/column after RCA normalisation}
+#' \item{col2_cossim}{Tibble containing the cosine similarities of the second node type/column after RCA normalisation}
 #' \item{RCA_full}{Tibble containing the RCA values of both columns/node types}
 #' @export
 #' @examples
-#' #calc_cos_sim(df_graph_main, "Source", "PoI")
-calc_rca_sim <- function(df_graph, type1="Source", type2="POI"){
+#' #calc_rca_sim(df_graph_main)
+calc_rca_sim <- function(df_graph){
   calc_rca <- function(m, cols, rows) {
     sum_cols <- colSums(m)
     sum_rows <- rowSums(m)
@@ -78,6 +76,8 @@ calc_rca_sim <- function(df_graph, type1="Source", type2="POI"){
     df_final[,1] <- cnames
     df_final
   }
+  type1 <- colnames(df_graph)[1]
+  type2 <- colnames(df_graph)[2]
   '%>%' <- magrittr::'%>%'
   as_tibble <- tibble::as_tibble
   df_wide <- df_graph %>% tidyr::spread(key = type1, value = weight, fill = 0)
@@ -87,27 +87,38 @@ calc_rca_sim <- function(df_graph, type1="Source", type2="POI"){
   df_mat <- as.matrix(df_rca[,2:cols])
   dimnames(df_mat) <- NULL
   vals <- calc_rca(df_mat, (cols-1), rows)
-  phi_source <- calc_phi(vals)
-  phi_place <- calc_phi(t(vals))
-  df_phi_source <- create_phi_df(phi_source, type1, colnames(df_wide)[2:cols])
-  df_phi_place <- create_phi_df(phi_place, type2, dplyr::pull(df_wide[,1]))
-  df_phi_source <- tidyr::pivot_longer(df_phi_source,-1,names_to="Secondary",values_to="RCA")
-  df_phi_source <- df_phi_source %>% dplyr::rowwise() %>%
+  phi_1 <- calc_phi(vals)
+  phi_2 <- calc_phi(t(vals))
+  df_phi_1 <- create_phi_df(phi_1, type1, colnames(df_wide)[2:cols])
+  df_phi_2 <- create_phi_df(phi_2, type2, dplyr::pull(df_wide[,1]))
+  df_phi_1 <- tidyr::pivot_longer(df_phi_1,-1,names_to="Secondary",values_to="RCA")
+  df_phi_1 <- df_phi_1 %>% dplyr::rowwise() %>%
     dplyr::mutate(temp = paste(sort(c(get(type1),Secondary)), collapse = " "))
-  df_phi_source <- df_phi_source[!duplicated(df_phi_source$temp),1:3]
-  df_phi_source <- df_phi_source[df_phi_source$RCA > 0,]
-  df_phi_place <- tidyr::pivot_longer(df_phi_place,-1,names_to="Secondary",values_to="RCA")
-  df_phi_place <- df_phi_place %>% dplyr::rowwise() %>%
+  df_phi_1 <- df_phi_1[!duplicated(df_phi_1$temp),1:3]
+  df_phi_1 <- df_phi_1[df_phi_1$RCA > 0,]
+  df_phi_2 <- tidyr::pivot_longer(df_phi_2,-1,names_to="Secondary",values_to="RCA")
+  df_phi_2 <- df_phi_2 %>% dplyr::rowwise() %>%
     dplyr::mutate(temp = paste(sort(c(get(type2),Secondary)), collapse = " "))
-  df_phi_place <- df_phi_place[!duplicated(df_phi_place$temp),1:3]
-  df_phi_place <- df_phi_place[df_phi_place$RCA > 0,]
+  df_phi_2 <- df_phi_2[!duplicated(df_phi_2$temp),1:3]
+  df_phi_2 <- df_phi_2[df_phi_2$RCA > 0,]
   df_rca <- as_tibble(vals)
   colnames(df_rca) <- colnames(df_wide)[2:cols]
   df_rca[,paste(type2)] <- df_wide[,type2]
   df_rca <- df_rca[,c(colnames(df_rca)[cols],colnames(df_rca)[1:(cols-1)])]
-  output <- list(RCA_df_row = df_phi_place, RCA_df_col = df_phi_source, RCA_full = df_rca)
+  output <- list(col1_cossim = df_phi_1, col2_cossim = df_phi_2, RCA_full = df_rca)
 }
 
+#' Calculates the similarities of a bipartite network using the Brainerd-Robinson coefficient
+#'
+#' @param df_graph A dataframe of edge weights of a bipartite network
+#' @returns An output list containing three components:
+#' \item{col1_brsim}{Tibble containing the Brainerd-Robinson coefficients of first node type/columns}
+#' \item{col2_brsim}{Tibble containing the Brainerd-Robinson coefficients of second node type/columns}
+#' \item{col1_brmat}{Tibble containing the Brainerd-Robinson coefficient matrix for the first column}
+#' \item{col2_brmat}{Tibble containing the Brainerd-Robinson coefficient matrix for the second column}
+#' @export
+#' @examples
+#' #calc_br_sim(df_graph_main)
 calc_br_sim <- function(df_graph){
   brainerd_robinson <- function(df) {
     ncols <- dim(df)[1]
@@ -155,6 +166,5 @@ calc_br_sim <- function(df_graph){
     dplyr::mutate(temp = paste(sort(c(get(col2),Secondary)),collapse = " "))
   BR_df_col2 <- BR_df_col2[!duplicated(BR_df_col2$temp),1:3]
   BR_df_col2 <- BR_df_col2[BR_df_col2[,1] != BR_df_col2[,2],]
-  output <- list(BR_df_col1 = BR_df_col2, BR_df_col2 = BR_df_col1, BR_mat_col1 = df_br_col2, BR_mat_col2 = df_br_col1)
+  output <- list(col1_brsim = BR_df_col2, col2_brsim = BR_df_col1, col1_brmat = df_br_col2, col2_brmat = df_br_col1)
 }
-

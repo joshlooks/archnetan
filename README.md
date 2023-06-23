@@ -4,6 +4,8 @@
 # archnetan
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/nesaking100/archnetan/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/nesaking100/archnetan/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of archnetan is to make network analysis of archaeological

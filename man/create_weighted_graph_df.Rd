@@ -24,5 +24,5 @@ An output list containing two components:
 Creates a bipartite network from an inputted dataframe with weighted frequencies
 }
 \examples{
-#create_weighted_graph_df(df_full, "Source", "Combined", "Weight (g)")
+create_weighted_graph_df(archnetan::obsidian_full_df, "Study Site", "Source", "Weight (g)")
 }

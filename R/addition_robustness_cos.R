@@ -22,6 +22,7 @@
 cos_communities_single <- function(df, col1, col2, proportion=0.10, numReps=100){
   as_tibble <- tibble::as_tibble
   tibble <- tibble::tibble
+  membership <- igraph::membership
   # Bootstrap variables
   df <- as_tibble(df)
   nRows <- dim(df)[1]
@@ -123,6 +124,8 @@ cos_communities_single <- function(df, col1, col2, proportion=0.10, numReps=100)
 cos_communities_multi <- function(df, col1, col2, proportion=0.10, numReps=100){
   as_tibble <- tibble::as_tibble
   tibble <- tibble::tibble
+  '%>%' <- magrittr::'%>%'
+  membership <- igraph::membership
   df <- as_tibble(df)
   nRows <- dim(df)[1]
   numNoise <- ceiling(nRows*proportion)
@@ -217,11 +220,8 @@ cos_communities_multi <- function(df, col1, col2, proportion=0.10, numReps=100){
 #' @param col2 A string of the second column used to make graphs
 #' @param proportion A double corresponding to the proportion of the original dataset's size to add as noise
 #' @param numReps Number of runs noise addition runs to complete
-#' @param method A string determining the method of drawing added noise data points:
-#' \itemize{
-#' \item{single (default)}{Draws a full artifact from the df dataframe}
-#' \item{multi}{Draws each characteristic from the df dataframe}
-#' }
+#' @param method A string determining the method of drawing added noise data points: single for full artifact,
+#' multi for drawing each artifact variably separately
 #' @param propSave Proportion of noise added for which to save the cos_communities_single/multi output for
 #'
 #' @returns An output list containing three components:
@@ -265,9 +265,9 @@ create_added_noise_cos_communities <- function(df, col1, col2, proportion=0.10, 
         outSave <- outProp
       }
       col1Stats[l,2] <- mean(outProp$hamming1)
-      col1Stats[l,3] <- sd(outProp$hamming1)
+      col1Stats[l,3] <- stats::sd(outProp$hamming1)
       col2Stats[l,2] <- mean(outProp$hamming2)
-      col2Stats[l,3] <- sd(outProp$hamming2)
+      col2Stats[l,3] <- stats::sd(outProp$hamming2)
     }
     output <- list(col1Stats = col1Stats, col2Stats = col2Stats, propSave <- outSave)
   }

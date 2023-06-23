@@ -5,13 +5,9 @@
 #' @param col1 A string of the first column used to make graphs
 #' @param col2 A string of the second column used to make graphs
 #' @param nBoot Number of bootstrap runs to complete
-#' @param method A string determining the method of drawing bootstrap replicants:
-#' \itemize{
-#' \item{single (default)}{Draws a full artifact from the df_full dataframe}
-#' \item{multi}{Draws each characteristic from the df_full dataframe}
-#' }
+#' @param method A string determining the method of drawing bootstrap replicants: single for full artifact,
+#' multi for drawing each artifact variably separately
 #' @returns An output list containing nine components:
-#' \itemize{
 #' \item{comm1}{Tibble containing the assigned communities of column 1 in each bootstrap run}
 #' \item{comm2}{Tibble containing the assigned communities of column 2 in each bootstrap run}
 #' \item{hamming1}{Vector containing the Hamming distance to the original column 1 communities in each bootstrap run}
@@ -21,7 +17,6 @@
 #' \item{col1Stats}{List of the mean and standard deviation of the Hamming distance for column 1 across bootstrap runs}
 #' \item{col2Stats}{List of the mean and standard deviation of the Hamming distance for column 2 across bootstrap runs}
 #' \item{df}{List of lists corresponding to the df_graph like tibbles produced in each bootstrap}
-#' }
 #' @export
 #'
 #' @examples
@@ -29,6 +24,7 @@
 #' create_bootstrap_RCA_communities(df_graph, df_full, "Source", "Site", nboot=200, method="multi")
 #' }
 create_bootstrap_RCA_communities <- function(df, df_full, col1, col2, nBoot=100, method='single'){
+  membership <- igraph::membership
   # Function to deal with missing nodes during resampling
   copy_and_add_list <- function(original, replication){
     copy <- original
@@ -43,9 +39,9 @@ create_bootstrap_RCA_communities <- function(df, df_full, col1, col2, nBoot=100,
   tibble <- tibble::tibble
   bootN <- dim(df_full)[1]
   # Hamming and output variables
-  origRCA <- calc_rca_sim(df, col1, col2)
-  origMem1 <- membership(calc_com_louv(origRCA$RCA_df_col)$community)
-  origMem2 <- membership(calc_com_louv(origRCA$RCA_df_row)$community)
+  origRCA <- calc_rca_sim(df)
+  origMem1 <- membership(calc_com_louv(origRCA$col1_cossim)$community)
+  origMem2 <- membership(calc_com_louv(origRCA$col2_cossim)$community)
   col1Diff <- rep(0,nBoot)
   col2Diff <- rep(0,nBoot)
   col1Change <- matrix(0, length(origMem1), (nBoot+1))
@@ -74,9 +70,9 @@ create_bootstrap_RCA_communities <- function(df, df_full, col1, col2, nBoot=100,
     dfBoot <- create_graph_df(thisBoot, col1, col2)
     dfBoot <- as_tibble(dfBoot$df)
     bootRepdf <- append(bootRepdf, dfBoot)
-    noiseRCA <- calc_rca_sim(dfBoot, col1, col2)
-    col1_rca_noise = calc_com_louv(noiseRCA$RCA_df_col)
-    col2_rca_noise = calc_com_louv(noiseRCA$RCA_df_row)
+    noiseRCA <- calc_rca_sim(dfBoot)
+    col1_rca_noise = calc_com_louv(noiseRCA$col1_cossim)
+    col2_rca_noise = calc_com_louv(noiseRCA$col2_cossim)
     col1mem <- membership(col1_rca_noise$community)
     col2mem <- membership(col2_rca_noise$community)
     swaps <- combinat::permn(max(col1mem))
@@ -135,7 +131,7 @@ create_bootstrap_RCA_communities <- function(df, df_full, col1, col2, nBoot=100,
   output <- list(comm1 = bootRepComm1, comm2 = bootRepComm2,
                  hamming1 = col1Diff, hamming2 = col2Diff,
                  col1Changes = col1Change, col2Changes = col2Change,
-                 col1Stats = list(Mean=mean(col1Diff), STD=sd(col1Diff)),
-                 col2Stats = list(Mean=mean(col2Diff), STD=sd(col2Diff)),
+                 col1Stats = list(Mean=mean(col1Diff), STD=stats::sd(col1Diff)),
+                 col2Stats = list(Mean=mean(col2Diff), STD=stats::sd(col2Diff)),
                  df = bootRepdf)
 }

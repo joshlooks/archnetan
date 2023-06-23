@@ -22,5 +22,5 @@ An output list containing two components:
 Creates a bipartite network from an inputted dataframe
 }
 \examples{
-#create_graph_df(df_full, "Source", "Combined")
+create_graph_df(archnetan::obsidian_full_df, "Study Site", "Source")
 }
